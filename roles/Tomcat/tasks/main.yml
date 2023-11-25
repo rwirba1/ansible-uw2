@@ -32,7 +32,7 @@
 
   - name: Load variables from techapp-config
     include_vars:
-      file: /home/ubuntu/workspace/New-Build/roles/Tomcat/templates/techapp-config.yml    
+      file: /home/ubuntu/workspace/techapp-deploy/roles/Tomcat/templates/techapp-config.yml    
 
   - name: Configure tomcat-users.xml
     template:
