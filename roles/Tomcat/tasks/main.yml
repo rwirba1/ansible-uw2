@@ -1,0 +1,52 @@
+  - name: Ensure Tomcat is installed
+    apt:
+      name: tomcat9
+      state: present
+
+  - name: Set owner permissions for Tomcat directories
+    file:
+      path: "{{ item }}"
+      owner: tomcat
+      group: tomcat
+      recurse: yes
+    loop:
+      - /var/lib/tomcat9/
+      - /etc/tomcat9/
+      - /var/log/tomcat9/
+
+  - name: Set file permissions for Tomcat directories
+    file:
+      path: "{{ item }}"
+      mode: '0755'
+      recurse: yes
+    loop:
+      - /var/lib/tomcat9/
+      - /etc/tomcat9/
+      - /var/log/tomcat9/
+
+  - name: Allow port 8080 through UFW
+    ufw:
+      rule: allow
+      port: '8080'
+      proto: tcp
+
+  - name: Load variables from techapp-config
+    include_vars:
+      file: /home/ubuntu/workspace/New-Build/roles/Tomcat/templates/techapp-config.yml    
+
+  - name: Configure tomcat-users.xml
+    template:
+      src: techapp-user.j2
+      dest: /etc/tomcat9/tomcat-users.xml   
+
+  - name: Ensure JAVA_HOME is set
+    lineinfile:
+      path: /etc/environment
+      line: 'JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/"'
+      create: yes
+
+  - name: Reload environment variables
+    shell: |
+      source /etc/environment
+    args:
+      executable: /bin/bash

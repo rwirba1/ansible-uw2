@@ -1,0 +1,51 @@
+
+  - name: Download WAR file from Nexus
+    get_url:
+      url: "http://nexus.appweb.live:8081/repository/TechApp-release/prod/TechApp/23-09-08_0426/TechApp-23-09-08_0426.war"
+      timeout: 60  # Adjust as per your needs
+      dest: "/tmp/TechApp-23-09-08_0426.war"
+      username: "{{ lookup('env', 'NEXUS_USER') }}"
+      password: "{{ lookup('env', 'NEXUS_PASS') }}"
+      force_basic_auth: yes
+
+  - name: Copy WAR file to ROOT directory
+    copy:
+      src: /tmp/TechApp-23-09-08_0426.war
+      dest: "{{ webapp_directory }}/TechApp-23-09-08_0426.war"
+      remote_src: yes
+      owner: tomcat
+      group: tomcat # Adjust if necessary
+      mode: '0644'
+
+  - name: Wait for 30 seconds for Tomcat to complete deployment
+    wait_for:
+      timeout: 30
+      msg: "Waited for 30 seconds for Tomcat deployment"  
+
+  # - name: Ensure ROOT directory is empty
+  #   file:
+  #     path: "{{ webapp_directory }}/ROOT"
+  #     state: absent
+
+  # - name: Ensure ROOT directory is present
+  #   file:
+  #     path: "{{ webapp_directory }}/ROOT"
+  #     state: directory
+  #     mode: '0755'
+
+  # - name: Copy contents from TechApp-23-09-04_0822 to ROOT
+  #   shell:
+  #     cmd: "cp -r {{ webapp_directory }}/TechApp-23-09-04_2001.war/* {{ webapp_directory }}/ROOT/"
+  #   become: yes
+
+
+  - name: Enable site
+    file:
+      src: /etc/nginx/sites-available/default
+      dest: /etc/nginx/sites-enabled/default
+      state: link
+
+  - name: Restart Nginx using systemctl
+    become: yes
+    command:
+      cmd: systemctl restart nginx

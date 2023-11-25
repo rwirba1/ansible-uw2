@@ -1,0 +1,20 @@
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+
+  - name: Install Nginx
+    apt:
+      name: nginx
+      state: present
+
+  - name: Configure Nginx to forward requests to Tomcat
+    copy:
+      src: /home/ubuntu/workspace/New-Build/roles/Nginx/templates/nginx.conf
+      dest: /etc/nginx/sites-available/default
+      # remote_src: yes
+  
+
+  - name: Ensure backup directory exists
+    file:
+      path: "{{ backup_directory }}"
+      state: directory

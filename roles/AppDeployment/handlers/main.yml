@@ -1,0 +1,8 @@
+---
+- name: Reload Tomcat9
+  become: yes
+  shell: sudo systemctl restart tomcat9
+
+- name: Reload Nginx
+  become: yes
+  shell: sudo systemctl restart nginx

@@ -1,0 +1,16 @@
+- name: Set up Nginx with HTTPS & Install Tomcat9 on Ubuntu
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+  vars:
+    repo_url: "git@github.com:rwirba1/techapp-ansible.git"
+    dest_dir: "/home/ubuntu/ansible"
+    webapp_directory: /var/lib/tomcat9/webapps
+    backup_directory: /var/lib/tomcat9/webapps
+    unzipped_folder_name: TechApp
+
+  roles:
+    - Java
+    - Tomcat
+    - Nginx
+    - AppDeployment
